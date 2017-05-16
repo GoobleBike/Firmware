@@ -8,6 +8,7 @@
 class ReadSpeed{
   private:
   int port;
+  int portLed;
   int speed;
   public:
   ReadSpeed();

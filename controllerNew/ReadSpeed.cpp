@@ -16,7 +16,9 @@ int vel;
 
 ReadSpeed::  ReadSpeed(){
   this->port = PORT_INPUT_READ;
+  this->portLed = PORT_INPUT_READ_LED;
   pinMode(this->port, INPUT);
+  pinMode(this->portLed, OUTPUT);
 }
 
 void ReadSpeed:: execute(){
@@ -25,6 +27,7 @@ void ReadSpeed:: execute(){
     countPulses=constrain(countPulses,0,67);
     vel=map(countPulses,0,67,0,30);
     this->speed = vel; 
+    digitalWrite(this->portLed, HIGH);
     if(DEBUG_SERIAL){ 
        Serial.print("Get Request Speed: ");
        Serial.print(this->speed);
@@ -33,6 +36,7 @@ void ReadSpeed:: execute(){
     startBase=millis();
     countPulses=0;
   }
+  digitalWrite(this->portLed, LOW);
   //campionamento
   sensor=digitalRead(this->port);
   //rilevamento fronte di salita

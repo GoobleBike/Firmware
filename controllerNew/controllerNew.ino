@@ -10,7 +10,7 @@
 
 
 BreakeActuator breake;
-MyHttpClient  clientHttp("Http:\\192.168.1.117\gooble.php?bubu=");
+MyHttpClient  clientHttp("http:\\\\192.168.1.117\\gooble.php?bubu=");
 ReadSpeed reader;
 Delay delaySend(DELAY_TIME_SEND_REQUEST);
 int valBreake;
@@ -20,6 +20,7 @@ void setup() {
 if(DEBUG_SERIAL){
 Serial.begin(9600);
 Serial.print("GOOBLE DEBUG ......\n");
+delay(4000);
 }
 
 }
@@ -28,6 +29,9 @@ void loop() {
   reader.execute();
   delaySend.execute();
   if(delaySend.isReached() == true && reader.IsMoving() == true){
+    if(DEBUG_SERIAL){
+      Serial.print("IF\n");
+    }
      valBreake = clientHttp.sendRequest(reader.getSpeed());
      breake.setBreak(valBreake);
   }

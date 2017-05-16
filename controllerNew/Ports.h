@@ -1,6 +1,6 @@
 
 #define PORT_INPUT_READ       2
-#define PORT_OUTPUT_READ_LED  9
+#define PORT_INPUT_READ_LED  9
 #define PORT_OUTPUT_BREAK     5
 #define PORT_OUTPUT_BREAK_LED 3
 #define PORT_LED_SEND_REQUEST 10

@@ -14,23 +14,31 @@ MyHttpClient::MyHttpClient(String url){
 
 unsigned int MyHttpClient::sendRequest(unsigned int speed){
     char buf[3];
+    char c;
     int a = 0;
+    String newUrl;
     
-     this->url = this->url + speed;
+     newUrl = this->url + speed;
      if(DEBUG_SERIAL){ 
-         Serial.print("Send Request URL: "+ this->url + "\n");
+         Serial.print("Send Request URL: "+ newUrl + "\n");
       } 
-      client.get(this->url);
-      while (client.available()) {
-        digitalWrite(this->led, HIGH);
-        buf[a] = client.read();
-        a++;
+      client.get(newUrl);
+      while (client.available()){
+      //  digitalWrite(this->led, HIGH);
+        c = client.read();
         if(DEBUG_SERIAL){ 
          Serial.print("Get Request VAL: ");
+         Serial.print(c);
+         Serial.print("\n");
+        }
+        buf[a] = c; 
+        a++;
+      }
+        if(DEBUG_SERIAL){ 
+         Serial.print("Get Request BUF: ");
          Serial.print(buf);
          Serial.print("\n");
         } 
-      }
       digitalWrite(this->led, LOW);
     
    return int(buf);
