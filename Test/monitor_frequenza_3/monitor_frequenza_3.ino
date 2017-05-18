@@ -1,4 +1,5 @@
 //The Gooble Bike 2.0!
+//pulse frequency
 //determina la frequenza degli impulsi su una base dei tempi (default 1 S)
 //e lo stampa in imp/S
 //nessuna segnalazione sui led
