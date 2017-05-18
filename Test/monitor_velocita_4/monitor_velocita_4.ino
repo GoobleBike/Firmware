@@ -1,4 +1,5 @@
 //The Gooble Bike 2.0!
+//maps pulse frequency into speed
 //determina la velocità in km/h mappando la frequenza in imp/S
 //e lo stampa in km/h
 //nessuna segnalazione sui led
