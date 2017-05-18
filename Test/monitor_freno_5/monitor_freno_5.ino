@@ -1,4 +1,5 @@
 //The Gooble Bike 2.0!
+//brake test
 //test del freno attua la frenata in modo direttamente proporzionale alla velocità
 //stampa sia la velocità in km/h che l'intensità di frenata in unità PWM (0-255)
 //riporta l'intensità di frenata sul led BRAKING
