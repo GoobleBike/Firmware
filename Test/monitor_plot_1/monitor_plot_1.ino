@@ -1,5 +1,5 @@
 //The Gooble Bike 2.0!
-//Monitor sensore: plot
+//Sensor monitor: plot
 //rileva la forma d'onda del sensore di velocità
 //e lo stampa sulla console per una diagnostica con plotter
 //frequenza di campionamento regolabile
