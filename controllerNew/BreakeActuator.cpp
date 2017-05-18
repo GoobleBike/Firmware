@@ -11,10 +11,15 @@ BreakeActuator::BreakeActuator(){
 
   
 void BreakeActuator::setBreak(unsigned int value){
-     int brake;
-     
-     brake=map(value,0,30,0,255);
+    unsigned int brake;
+      if(DEBUG_SERIAL){
+      Serial.println("BRAKE VALUE:" + value);
+     }
+     value = constrain(value,0,20);
+     brake = map(value,0,20,0,255);
      analogWrite(port, brake);
      analogWrite(led, brake);
 }
+
+
 

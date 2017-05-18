@@ -6,9 +6,9 @@
 * il metodo execute deve essere schedulato direttamente o indirettamente nel loop
 * il metodo execute verifica il passare del tempo mediante il metodo millis() e quando 
 * il ritardo scade setta il flag di fine conteggio e riparte immediatamente con un nuovo conteggio
-* é compito dell'applicazione testare il flag di fine conteggio con il metodo isReached
+* ÃƒÂ© compito dell'applicazione testare il flag di fine conteggio con il metodo isReached
 * la lettura del flag cancella l'evento
-* Il valore di ritardo può essere cambiato in runtime con il metodo setTimer
+* Il valore di ritardo puÃƒÂ² essere cambiato in runtime con il metodo setTimer
 */
 #include <Arduino.h>
 #ifndef Delay_h
@@ -36,3 +36,5 @@ class Delay {
     void setTimer(unsigned long time);
 };
 #endif
+
+

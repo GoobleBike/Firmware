@@ -1,7 +1,7 @@
 #include "ReadSpeed.h"
 #include "Ports.h"
 
-#define MINSPEED 8 //8 imp/s = 3,6 km/h
+#define MINSPEED 3 //8 imp/s = 3,6 km/h
 #define MAXSPEED 86 //86 imp/s = 36 km/h
 #define SPEEDTIMEBASE 1000 //timebase = 1 s
 
@@ -22,12 +22,14 @@ ReadSpeed::  ReadSpeed(){
 }
 
 void ReadSpeed:: execute(){
+  int velV;
   //verifica scadenza base dei tempi
   if(millis()-startBase>=TBASE) { //base dei tempi scaduta: invia dato
-    countPulses=constrain(countPulses,0,67);
-    vel=map(countPulses,0,67,0,30);
+    countPulses=constrain(countPulses,0,MAXSPEED);
+    vel=map(countPulses,0,MAXSPEED,0,39);
     this->speed = vel; 
-    digitalWrite(this->portLed, HIGH);
+    velV=map(vel,0,39,0,255);
+    analogWrite(this->portLed, velV);
     if(DEBUG_SERIAL){ 
        Serial.print("Get Request Speed: ");
        Serial.print(this->speed);
@@ -36,7 +38,7 @@ void ReadSpeed:: execute(){
     startBase=millis();
     countPulses=0;
   }
-  digitalWrite(this->portLed, LOW);
+ // digitalWrite(this->portLed, LOW);
   //campionamento
   sensor=digitalRead(this->port);
   //rilevamento fronte di salita
@@ -56,12 +58,14 @@ int ReadSpeed::getSpeed(){
   
 int ReadSpeed::IsMoving(){
   boolean ris=false;
-  //verifica se la velocità supera la soglia minima
-  if(speed > MINSPEED) { //velocità sopra la soglia minima: in movimento
+  //verifica se la velocitÃƒÂ  supera la soglia minima
+  if(this->speed > MINSPEED) { //velocitÃƒÂ  sopra la soglia minima: in movimento
     ris=true;
   }
   return ris;
 }
+
+
 
 
 

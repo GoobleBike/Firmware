@@ -6,9 +6,9 @@
 * il metodo execute deve essere schedulato direttamente o indirettamente nel loop
 * il metodo execute verifica il passare del tempo mediante il metodo millis() e quando 
 * il ritardo scade setta il flag di fine conteggio e riparte immediatamente con un nuovo conteggio
-* é compito dell'applicazione testare il flag di fine conteggio con il metodo isReached
+* ÃƒÂ© compito dell'applicazione testare il flag di fine conteggio con il metodo isReached
 * la lettura del flag cancella l'evento
-* Il valore di ritardo può essere cambiato in runtime con il metodo setTimer
+* Il valore di ritardo puÃƒÂ² essere cambiato in runtime con il metodo setTimer
 */
 #include "./Delay.h"
 /**********************************************************************************
@@ -46,8 +46,8 @@ Delay::Delay(unsigned long time) {
 /* scheduled thread
 /* questa azione deve essere schedulata direttamente o indirettamente nel loop del controller
 /*   legge il tempo attuale
-/*   verifica se il ritardo è passato
-/*   se il tempo è passato
+/*   verifica se il ritardo ÃƒÂ¨ passato
+/*   se il tempo ÃƒÂ¨ passato
 /*      setta il flag di evento
 /*      resetta il timer
 /*
@@ -55,7 +55,7 @@ Delay::Delay(unsigned long time) {
 void Delay::execute() {
   //legge il tempo attuale  
   _now=millis();
-  //verifica se il tempo è scaduto
+  //verifica se il tempo ÃƒÂ¨ scaduto
   if(_now-_before>_delay){ //ritardo passato: setta il flag di evento e resetta il timer
     _reached=true;              //trigger event
     _before=_now;               //reset timer
@@ -63,7 +63,7 @@ void Delay::execute() {
 }
 /**********************************************************************************
 /*
-/* isReached: verifica se il tempo è passato
+/* isReached: verifica se il tempo ÃƒÂ¨ passato
 /*            la lettura resetta il flag
 /*
 ***********************************************************************************/
@@ -84,3 +84,5 @@ void Delay::setTimer(unsigned long time) {
   _now=millis();        //set current time to present
   _before=_now;         //set previous time to presente
 }  
+
+

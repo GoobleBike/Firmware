@@ -11,6 +11,7 @@ class MyHttpClient{
     String url;
     HttpClient client;
     int led;
+    long b;
   public:
   MyHttpClient(String url);
   unsigned int sendRequest(unsigned int speed);
@@ -20,3 +21,5 @@ class MyHttpClient{
 
 
 #endif
+
+
