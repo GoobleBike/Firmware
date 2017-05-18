@@ -1,4 +1,5 @@
 //The Gooble Bike 2.0!
+//detects semiperiods
 //determina il semiperiodo della forma d'onda del sensore di velocità
 //e lo stampa in unità di campionamento (default 1 mS)
 //il led verde lampeggia in toggle tra i semiperiodi
