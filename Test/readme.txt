@@ -16,3 +16,4 @@ Maps pulse frequency [imp/s] into speed [km/h]
 
 Test #5: monitor_freno_5
 Outputs brake proportionally to speed
+
