@@ -28,13 +28,14 @@
 long tmo;
 long dsp;
 int mov;
+int cmd;
 int speed;
 long period=0;
 int enabled=0;
 int toggle=1;
 int pwm_in;
 int brake;
-int console=2;
+int console=1;
 
 void setup() {
   Serial.begin(9600);
@@ -50,7 +51,12 @@ void loop() {
   //gestione console
   if(console==1){ //console velocità/pendenza
     if(millis()-dsp>1000){
+      Serial.print(cmd);
+      Serial.print('\t');
       Serial.print(speed);
+      Serial.print('\t');
+//      Serial.println(brake);    
+      Serial.print(pwm_in);    
       Serial.print('\t');
       Serial.println(brake);    
       dsp=millis();
@@ -86,22 +92,42 @@ void loop() {
   }
   //cambia la velocità
   //legge il pot (0,1023)
-  int cmd=analogRead(A0);
-  //mappa per LED analogico (0,255)
-  mov=map(cmd,0,1023,0,255);
-  analogWrite(MOVING,mov);
-  //mappa inversa per semiperiodo min 6 (86 imp/sec) max 500 (1 imp/sec)
-  period=map(cmd,0,1023,500,6);
-  speed=map(cmd,0,1023,0,39);
-  //disabilita onda per ingresso 0 (periodo infinito)
-  if (cmd==0) {
-    enabled=0;
+  cmd=analogRead(A0);
+  if (cmd>0) {
+    long x=(long)cmd*1000;
+    long y=(long)1023000/x;
+    period=map(y,1,1023,2,500);
+    enabled=true;
   }
   else {
-    enabled=1;
+    period=0;
+    enabled=false;  
   }
+  mov=map(cmd,0,1023,0,255);
+  analogWrite(MOVING,mov);
+  speed=map(cmd,0,1023,0,39);
+    
+//  //mappa per LED analogico 
+//  mov=map(cmd,0,1023,255,0);
+//  analogWrite(MOVING,mov);
+//  //mappa per semiperiodo non lineare
+//  if (cmd<512) {
+//    period=map(cmd,0,511,2,32);  
+//  }
+//  else {
+//    period=map(cmd,512,1023,33,500);    
+//  }
+//  speed=map(cmd,0,1023,39,0);
+//  //disabilita onda per ingresso 0 (periodo infinito)
+//  if (cmd==0) {
+//    enabled=0;
+//  }
+//  else {
+//    enabled=1;
+//  }
   //gestione freno (ingresso)
   pwm_in=analogRead(A5);
-  brake=map(pwm_in,0,980,0,255);
+//  brake=map(pwm_in,5,980,0,255);
+  brake=map(pwm_in,0,1023,0,255);
   analogWrite(3,brake);
 }
