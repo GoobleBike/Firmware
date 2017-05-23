@@ -1,29 +1,28 @@
 //The Gooble Bike 2.0!
 //Trainer Emulator
-//genera sul pin 2 una forma d'onda compatibile con il sensore e proporzionale al poteziometro su A0 
-//diagnostica: forma d'onda sul pin 3 valore PWM sul pin 9 
-//riceve il segnale pwm sul pin A5 attraverso un filtro RC passabasso (5kOhm,220uF) e lo mostra sul led 3 
-// IN 0--/\/\/\--0--0 A5
-//         R     |
-//              ---
-//              --- C
-//               |
-//               = GND
-//console configurabile: 0 = no console, 1 = monitor velocità/pendenza, 2 plot sensore
+//genera sul pin 5 una forma d'onda compatibile con il sensore e inv.proporzionale al poteziometro su A0 
+//WARNING: range molto compresso sui valori alti
+//diagnostica: forma d'onda sul pin 3 e valore PWM sul pin 9  per led diagnostico
+//riceve il segnale pwm sul pin 2 e lo replica sul pin 3 per led diagnostico
+//con ponticello da 3 ad A5 valore analogico riletto sul pin A5 attraverso un filtro RC ed inviato in console
+//console configurabile: 0 = no console, 1 = monitor velocità/pendenza/pwm in, 2 plot sensore, 3 plot ingresso PWM
+//il tipo di console è determinato dagli ingressi 11 e 12
+// 11=0,12=0 (0) -> no console, 11=0,12=1 (1) -> monitor, 11=1,12=0 (2) -> plot sensor, 11=1,12=0 (1) -> plot pwm
 //collegamento con Yun
-//Yun      Emu
-//  2  <--  2
-//  5  --> RC IN --> A5
-// GND --- GND
+//Yun           Emu
+//  2  <--\/---  2
+//  5  ---/\-->  5
+// GND -------- GND
 
 //iDP 20/5/2017
 
-//hw Gooble Bike 1.0
-#define SENSOR  2
-#define BRAKE   5
+//hw I/O pin invertiti rispetto alla Gooble Bike
+#define SENSOR  5
+#define BRAKE   2
 #define BRAKING 3
 #define MOVING  9
-#define TCAMP   10
+#define SW1     11
+#define SW2     12
 
 long tmo;
 long dsp;
@@ -33,39 +32,54 @@ int speed;
 long period=0;
 int enabled=0;
 int toggle=1;
-int pwm_in;
-int brake;
-int console=1;
+int pwm_dig;
+int pwm_an;
+int console;
+int c;
 
 void setup() {
   Serial.begin(9600);
   pinMode(SENSOR,OUTPUT);
   pinMode(MOVING,OUTPUT);
-  pinMode(3,OUTPUT);
+  pinMode(BRAKE,INPUT);
+  pinMode(BRAKING,OUTPUT);
+  pinMode(SW1,INPUT_PULLUP);
+  pinMode(SW2,INPUT_PULLUP);
   digitalWrite(SENSOR,LOW);
+  digitalWrite(MOVING,LOW);
+  digitalWrite(BRAKING,LOW);
   tmo=millis();
   dsp=millis();
 }
 
 void loop() {
-  //gestione console
+  int sw1=digitalRead(SW1);
+  int sw2=digitalRead(SW2);
+  console=sw1*2+sw2;
+  //attuazione console
   if(console==1){ //console velocità/pendenza
     if(millis()-dsp>1000){
+      Serial.print("pot: ");
       Serial.print(cmd);
-      Serial.print('\t');
+      Serial.print(' ');
+      Serial.print("period: ");
+      Serial.print(period);
+      Serial.print(' ');
+      Serial.print("km/h: ");
       Serial.print(speed);
-      Serial.print('\t');
-//      Serial.println(brake);    
-      Serial.print(pwm_in);    
-      Serial.print('\t');
-      Serial.println(brake);    
+      Serial.print(' ');
+      Serial.print("pwm in: ");
+      Serial.println(pwm_an);    
       dsp=millis();
     }  
   }
-  else if (console==2) { //forma d'onda per plot
+  else if (console==2) { //forma d'onda per plot sensore
       Serial.println(toggle*5);    
   }
   //gestione sensore (uscita)
+  else if (console==3) { //forma d'onda per plot pwm
+      Serial.println(pwm_dig*5);        
+  }
   //generazione forma d'onda
   //verifica se onda abilitata
   if(enabled==1) {  //onda abilitata
@@ -93,10 +107,8 @@ void loop() {
   //cambia la velocità
   //legge il pot (0,1023)
   cmd=analogRead(A0);
-  if (cmd>0) {
-    long x=(long)cmd*1000;
-    long y=(long)1023000/x;
-    period=map(y,1,1023,2,500);
+  if (cmd>2) {
+    period=map(cmd,2,1023,500,2);
     enabled=true;
   }
   else {
@@ -107,27 +119,9 @@ void loop() {
   analogWrite(MOVING,mov);
   speed=map(cmd,0,1023,0,39);
     
-//  //mappa per LED analogico 
-//  mov=map(cmd,0,1023,255,0);
-//  analogWrite(MOVING,mov);
-//  //mappa per semiperiodo non lineare
-//  if (cmd<512) {
-//    period=map(cmd,0,511,2,32);  
-//  }
-//  else {
-//    period=map(cmd,512,1023,33,500);    
-//  }
-//  speed=map(cmd,0,1023,39,0);
-//  //disabilita onda per ingresso 0 (periodo infinito)
-//  if (cmd==0) {
-//    enabled=0;
-//  }
-//  else {
-//    enabled=1;
-//  }
   //gestione freno (ingresso)
-  pwm_in=analogRead(A5);
-//  brake=map(pwm_in,5,980,0,255);
-  brake=map(pwm_in,0,1023,0,255);
-  analogWrite(3,brake);
+  pwm_dig=digitalRead(BRAKE);
+  digitalWrite(BRAKING,pwm_dig);
+  pwm_an=analogRead(A5);
+  pwm_an=map(pwm_an,0,1023,0,255);
 }
