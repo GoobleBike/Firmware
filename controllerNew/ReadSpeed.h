@@ -10,8 +10,13 @@ class ReadSpeed{
   int port;
   int portLed;
   int speed;
+  long startBase;
+  int countPulses;
+  int sensor;
+  int previous;
   public:
   ReadSpeed();
+  void begin();
   void execute();
   int getSpeed();
   int IsMoving();
