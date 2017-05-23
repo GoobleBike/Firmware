@@ -1,4 +1,4 @@
-/* $Id: Delay.h 122 2013-05-20 17:31:34Z peroni $
+/* THE GOOBLE BIKE 2.0!
 * Delay 
 * realizza una versione non sospensiva della funzione delay
 * Il costruttore di default inizializza un ritardo di 1000 mS 
