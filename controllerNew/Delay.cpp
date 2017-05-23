@@ -55,7 +55,7 @@ Delay::Delay(unsigned long time) {
 void Delay::execute() {
   //legge il tempo attuale  
   _now=millis();
-  //verifica se il tempo ÃƒÂ¨ scaduto
+  //verifica se il tempo è scaduto
   if(_now-_before>_delay){ //ritardo passato: setta il flag di evento e resetta il timer
     _reached=true;              //trigger event
     _before=_now;               //reset timer
