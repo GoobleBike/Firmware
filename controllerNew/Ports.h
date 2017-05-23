@@ -1,9 +1,16 @@
+//The Gooble Bike 2.0!
+//Versione per Bologna Experience
+//Definizione delle porte
+//21/5/2017
 
-#define PORT_INPUT_READ       2
-#define PORT_INPUT_READ_LED   9
-#define PORT_OUTPUT_BREAK     5
-#define PORT_OUTPUT_BREAK_LED 3
-#define PORT_LED_SEND_REQUEST 10
+#define SENSOR_PIN            2
+#define BRAKE_PIN             5
+#define MOVING_LED_PIN        9
+#define BRAKING_LED_PIN       3
+#define SEND_LED_PIN         10
+#define SW1_PIN               6
+#define SW2_PIN               7
+#define SW3_PIN               8
 
 #define DEBUG_SERIAL 1
 
