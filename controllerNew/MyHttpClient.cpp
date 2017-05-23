@@ -42,7 +42,7 @@ unsigned int MyHttpClient::sendRequest(unsigned int speed){
     Serial.println("SEND REQ URL: "+ newUrl);
   } 
   digitalWrite(this->led, HIGH);    //led comm ON
-  client.get(newUrl);               //invio richiesta
+ client.get(newUrl);               //invio richiesta
   //polling di ricezione
   while ((client.available())){    //acquisisce solo i primi due caratteri
     c = client.read();

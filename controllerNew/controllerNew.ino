@@ -16,7 +16,7 @@
 #define DELAY_TIME_SEND_REQUEST 1000
 
 String urlProd="http://192.168.1.";
-String urlDev="http://itis0001.belluzzifioravanti.it";
+String urlDev="http://192.168.100.104";
 String url;
 
 
@@ -26,6 +26,8 @@ ReadSpeed reader;
 Delay delaySend(DELAY_TIME_SEND_REQUEST);
 unsigned int brakeValue;
 int id;
+volatile int contPulses = 0;
+
 
 //MyHttpClient  clientHttp("http://192.168.188.130/gooble/api/setv_getp?id=0&v=");
 //MyHttpClient  clientHttp("http://itis0001.belluzzifioravanti.it/gooble/api/setv_getp?id=0&v=");
@@ -42,6 +44,7 @@ void setup() {
   pinMode(MOVING_LED_PIN,OUTPUT);
   pinMode(BRAKING_LED_PIN,OUTPUT);
   pinMode(SEND_LED_PIN,OUTPUT);
+//  attachInterrupt(digitalPinToInterrupt(SENSOR_PIN), ISR, RISING);
   //lamp test
   digitalWrite(MOVING_LED_PIN,HIGH);
   digitalWrite(BRAKING_LED_PIN,HIGH);
@@ -96,4 +99,7 @@ void loop() {
   }
 }
 
+/*void ISR(){
+  reader.contPulses++;
+}*/
 

@@ -15,6 +15,7 @@ class ReadSpeed{
   int sensor;
   int previous;
   public:
+  volatile int countPulse;
   ReadSpeed();
   void begin();
   void execute();
