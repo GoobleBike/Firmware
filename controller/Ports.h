@@ -1,7 +1,7 @@
 //The Gooble Bike 2.0!
 //Versione per Bologna Experience
 //Definizione delle porte
-//21/5/2017
+//23/5/2017
 
 #define SENSOR_PIN            2
 #define BRAKE_PIN             5
