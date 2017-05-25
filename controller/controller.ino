@@ -32,7 +32,8 @@ int slope=0;
 
 //gestione server
 String urlProd="http://192.168.1.";                     //rete locale degli host
-String urlDev="http://itis0001.belluzzifioravanti.it";  //host di sviluppo
+//String urlDev="http://itis0001.belluzzifioravanti.it";  //host di sviluppo
+String urlDev="http://192.168.1.200";  //host di sviluppo
 String url;                                             //url con id
 int id;                                                 //id del nodo letto dagli switch
 HttpClient client;                                      //connessione client
