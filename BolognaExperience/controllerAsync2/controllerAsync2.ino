@@ -1,5 +1,5 @@
 //The Gooble Bike 2.0!
-//Versione per Bologna Experience
+//Versione per Bologna Experience ctrl #2
 //Async
 //Basata su hw Arduino Yun e sul trainer Elite RealAxiom vers. 6 (wired)
 //Legge gli impulsi del sensore di velocità e li converte in velocità [km/h] con una base dei tempi di 1s nel range 0-39 km/h.
@@ -11,7 +11,6 @@
 #include <Bridge.h>
 #include <HttpClient.h>
 #include <stdio.h>
-#include "MemoryFree.h"
 
 int computeSpeed(int theCount,long tBase);
 void sendSpeed(int theSpeed, String theUrl, HttpClient* theClient);
@@ -27,7 +26,7 @@ void mngTmo();
 #define MAXSLOPE 20           //massima pendenza gestibile
 #define MINSEMIP  7           //durata minima di un semiperiodo
 #define TXTIMEOUT 5000        //durata timeout di comunicazione
-
+#define CADTIMEOUT  1000      //durata intervallo di campionamento cadenza
 
 //variabili globali
 
@@ -42,6 +41,13 @@ volatile int filtro=0;                 //var. stato filtro antidisturbo: 0=idle,
 volatile long startSemip;              //istante di inizio del fronte di salita
 volatile int duration;                 //durata effettiva del semiperiodo
 volatile int countPulses=0;            //numero di impulsi contati
+
+//variabili di campionanto cadence
+int curCad;       //valore attuale del sens di cadenza
+int prvCad;       //valore precedente del sens di cadenza
+long startCad;    //istante iniziale del periodo di campionamento di cadenza
+int countCad;     //numero di impulsi contati nel periodo di camp
+int runCad;       //flag di movimento della cadenza true= in movimento, false=fermo
 
 //variabili di misura velocità
 long startSampling;           //istante di inizio di un campionamento
@@ -67,7 +73,8 @@ long tmoCount=0;
 
 //gestione server
 String urlProd="http://192.168.2.";                     //rete locale degli host
-String urlDev="http://itis0001.belluzzifioravanti.it";  //host di sviluppo
+//String urlDev="http://itis0001.belluzzifioravanti.it";  //host di sviluppo
+String urlDev="http://192.168.1.84";                    //host di sviluppo
 int id;                                                 //id del nodo letto dagli switch
 String curIp;
 String ip[5]={"","101","102","103","104"};
@@ -84,7 +91,8 @@ void setup() {
   pinMode(MOVING_LED_PIN,OUTPUT);
   pinMode(BRAKING_LED_PIN,OUTPUT);
   pinMode(SEND_LED_PIN,OUTPUT);
-  
+  pinMode(CADENCE_PIN,INPUT_PULLUP);
+    
   //lamp test
   digitalWrite(MOVING_LED_PIN,HIGH);
   digitalWrite(BRAKING_LED_PIN,HIGH);
@@ -109,7 +117,7 @@ void setup() {
     curIp=ip[id];    
     url=urlProd+curIp+"/gooble/api/setv_getp?id="+id+"&v=";
   }
-
+ url=urlDev+"/gooble/api/setv_getp?id="+id+"&v=";
   //setting status var
   txPending=0;
   txRunning=0;
@@ -121,19 +129,24 @@ void setup() {
   Bridge.begin();
   //local monitor
   if(DEBUG_SERIAL){
-    Serial.begin(9600);
+    Serial.begin(250000);
     delay(2000);
     Serial.println("GOOBLE DEBUG ......");
     Serial.print("ID ");
     Serial.println(id);
     Serial.print("URL: ");
     Serial.println(url);
-    Serial.print("FREE MEMORY ");
-    Serial.println(freeMemory());
     delay(4000);
   }
   attachInterrupt(digitalPinToInterrupt(SENSOR_PIN), rising, RISING);
   startSampling=millis();
+  
+  //start cadence sampling
+  curCad=digitalRead(CADENCE_PIN);
+  prvCad=curCad;
+  startCad=millis();
+  countCad=0;
+  runCad=false;
 }
 
 //ISR sul fronte positivo del segnale SENSOR: avvia il filtro antidisturbo e commuta interrupt sul fronte negativo
@@ -154,6 +167,23 @@ void falling(){
 }
 
 void loop() {
+  
+  //campionamento cadenza
+  curCad=digitalRead(CADENCE_PIN);
+  if((curCad!=prvCad)&&(curCad==0)){ //fronte di discesa
+    countCad++;  //conta un impulso
+  }
+  prvCad=curCad;      //aggiorna stato
+  if(millis()-startCad>CADTIMEOUT) { //intervallo di campionamento terminato
+    if(countCad>0) {  //ci sono stati impulsi
+      runCad=true;    //cadence running
+    }
+    else {            //non ci sono stati impulsi
+      runCad=false;   //cadence not running
+    }
+    countCad=0;       //retriggera intervallo di campionamento
+    startCad=millis();
+  }
   
   //determinazione imp/s e calcolo velocità  
   curSampleTime=millis()-startSampling;
@@ -225,8 +255,6 @@ int computeSpeed(int theCount,long tBase){
       int theSpeed;
       int ledSpeed;
       if(DEBUG_SERIAL){ 
-        Serial.print("FREE MEMORY ");
-        Serial.println(freeMemory());
         Serial.print("SAMPLE: ");
         Serial.print("TBASE: ");
         Serial.print(curSampleTime);  
@@ -241,14 +269,22 @@ int computeSpeed(int theCount,long tBase){
         Serial.print(limitedCount);  
       }
       theSpeed=map(limitedCount,0,MAXPULSES,0,MAXSPEED);
-      //temp
-      //theSpeed=10;
       if(DEBUG_SERIAL){ 
         Serial.print(" SPEED KM/H: ");
-        Serial.println(theSpeed);      
+        Serial.print(theSpeed);      
       }  
       ledSpeed=map(theSpeed,0,MAXSPEED,0,255);
       analogWrite(MOVING_LED_PIN, theSpeed);
+      if(DEBUG_SERIAL){ 
+        Serial.print(" CADENCE: ");
+        Serial.println(countCad);      
+      }  
+      //check cadence
+      if(CADENCE_ENABLE) { //se il controllo di cadenza è abilitato
+        if (runCad==false){ //se la cadenza è ferma
+          theSpeed=0;       //azzera la velocità
+        }
+      }
       return theSpeed;
 }
 
